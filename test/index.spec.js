@@ -23,37 +23,44 @@ describe('Safe Coerce', () => {
     expect(safeCoerce(new String('moo'), '+', new String('moo'), )).to.equal('moomoo');
   });
 
-  it('should allow reassignment', () => {
+  it('should allow reassignment of references', () => {
     const some = 10;
     expect(safeCoerce(some, '+=', 10)).to.equal(20);
+  });
+
+  it('should fail on coercion of NaN', () => {
+    expect(() => {
+      safeCoerce(NaN, '+', undefined);
+    })
+    .to.throw(TypeError, 'Unexpected coercion of type "NaN" and type "undefined" using "+" operator');
   });
 
   it('should fail on coercion of array and object', () => {
     expect(() => {
       safeCoerce([], '+', {}, );
     })
-    .to.throw(TypeError, 'Unexpected coercion of type "object" and type "object" using "+" operator');
+    .to.throw(TypeError, 'Unexpected coercion of type "array" and type "object" using "+" operator');
   });
 
   it('should fail on coercion of array and object', () => {
     expect(() => {
       safeCoerce([], '-', {}, );
     })
-    .to.throw(TypeError, 'Unexpected coercion of type "object" and type "object" using "-" operator');
+    .to.throw(TypeError, 'Unexpected coercion of type "array" and type "object" using "-" operator');
   });
 
   it('should fail on coercion of array and object', () => {
     expect(() => {
       safeCoerce([], '-=', {}, );
     })
-    .to.throw(TypeError, 'Unexpected coercion of type "object" and type "object" using "-=" operator');
+    .to.throw(TypeError, 'Unexpected coercion of type "array" and type "object" using "-=" operator');
   });
 
   it('should fail on coercion of array and object', () => {
     expect(() => {
       safeCoerce([], '-', [], );
     })
-    .to.throw(TypeError, 'Unexpected coercion of type "object" and type "object" using "-" operator');
+    .to.throw(TypeError, 'Unexpected coercion of type "array" and type "array" using "-" operator');
   });
 });
 
@@ -92,6 +99,11 @@ describe('Safe Property Access', () => {
       });
     })
     .to.throw(TypeError, '"woo.1" is out of bounds');
+
+    expect(() => {
+      safePropertyAccess([0, 0, 0], ['', ['', ['']]]);
+    })
+    .to.throw(TypeError, '"0.0" is out of bounds');
   });
 
   it('should fail on undefined objects', () => {
@@ -119,5 +131,16 @@ describe('Safe Property Access', () => {
       });
     })
     .to.throw(TypeError, '"woo.loo.hi" is not defined');
+
+    expect(() => {
+      safePropertyAccess(['foo', 'bar', '_MOO_', 'baz'], {
+        foo: {
+          bar: {
+            baz: ''
+          }
+        }
+      });
+    })
+    .to.throw(TypeError, '"foo.bar._MOO_" is not defined');
   });
 });
