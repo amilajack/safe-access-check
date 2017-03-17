@@ -16,12 +16,16 @@ npm install --save-dev safe-access-check
 ```js
 import { safeCoerce, safePropertyAccess } from 'safe-access-check';
 
+
+
 // 1. Usage as an expression
 // -------------------------
 let some = moo + '10' // 'moo10'
 some = safeCoerce('moo', '+', 10) // 'moo10'
 
-// 2. Usage for coercion safeguard 
+
+
+// 2. Usage for coercion safeguard
 // -------------------------------
 [] + {} // "[object Object]"
 
@@ -35,14 +39,16 @@ safeCoerce(NaN, '+', undefined);
 // Throws TypeError: Unexpected coercion of type "NaN" and type
 // "undefined" using "+" operator
 
+
+
 // 3. Usage for better undefined propagation errors
 // ------------------------------------------------
 const obj = {
-	foo: {
+  foo: {
     bar: {
       baz: false
     }
-	}
+  }
 }
 
 obj.foo.bar._MOO_.baz;
@@ -50,6 +56,8 @@ obj.foo.bar._MOO_.baz;
 
 safePropertyAccess(['foo', 'bar', '_MOO_', 'baz'], obj);
 // Throws TypeError: '"foo.bar._MOO_" is not defined'
+
+
 
 // 4. Usage as out of bounds check
 // -------------------------------
