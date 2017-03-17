@@ -1,0 +1,29 @@
+{
+  "name": "safe-access-check",
+  "author": "Amila Welihinda",
+  "license": "MIT",
+  "version": "0.0.1",
+  "description": "Minimal library for safe property access",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "cross-env NODE_ENV=production rm -rf lib && mkdir lib && babel index.js --out-file lib/index.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amilajack/safe-access-check.git"
+  },
+  "bugs": {
+    "url": "https://github.com/amilajack/safe-access-check/issues"
+  },
+  "homepage": "https://github.com/amilajack/safe-access-check#readme",
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-cli": "^6.24.0",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "babel-preset-env": "^1.2.2",
+    "chai": "^3.5.0",
+    "cross-env": "^3.2.4",
+    "jest-cli": "^19.0.2"
+  }
+}
