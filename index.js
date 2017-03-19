@@ -1,7 +1,7 @@
 /**
  * Safely access properties and indexs on arrays and objects
  */
-export function safePropertyAccess(protoChain: Array<string>, target: Object) {
+export function safePropertyAccess(protoChain: Array<string | number>, target: Object) {
   let ref = target;
   let type;
 
@@ -19,7 +19,7 @@ export function safePropertyAccess(protoChain: Array<string>, target: Object) {
 
   separators.push(type)
 
-  protoChain.forEach((each, index) => {
+  protoChain.forEach((each: string | number, index) => {
     if (typeof ref[each] === 'undefined') {
       if (typeof each === 'number') {
         separators.push(`[${each}]`)
@@ -27,7 +27,9 @@ export function safePropertyAccess(protoChain: Array<string>, target: Object) {
         separators.push(`.${each}`)
       }
       if (typeof ref.length === 'number') {
-        throw new TypeError(`"${separators.join('')}" is out of bounds`);
+        if (each > ref.length - 1) {
+          throw new TypeError(`"${separators.join('')}" is out of bounds`);
+        }
       }
       throw new TypeError(`"${separators.join('')}" is not defined`);
     } else {
@@ -88,6 +90,3 @@ export function safeMethodCall(): string {}
 
 // @TODO
 // function disallowAbstractEqualityComparison() {}
-
-global.safePropertyAccess = safePropertyAccess;
-global.safeCoerce = safeCoerce;
