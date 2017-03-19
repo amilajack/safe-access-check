@@ -90,3 +90,6 @@ export function safeMethodCall(): string {}
 
 // @TODO
 // function disallowAbstractEqualityComparison() {}
+
+global.safeCoerce = safeCoerce
+global.safePropertyAccess = safePropertyAccess
