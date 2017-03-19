@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { safeCoerce, safeMethodCall, safePropertyAccess } from '../index';
 
 
-describe('Safe Method Call', () => {
+describe.skip('Safe Method Call', () => {
   expect(() => {
     const obj = {
       some() {}
