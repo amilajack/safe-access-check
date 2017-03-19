@@ -6,7 +6,7 @@
   "description": "Minimal library for safe property access",
   "main": "lib/index.js",
   "scripts": {
-    "build": "cross-env NODE_ENV=production rm -rf lib && mkdir lib && babel index.js --out-file lib/index.js",
+    "build": "cross-env NODE_ENV=production rm -rf lib && mkdir lib && babel src/index.js --out-file lib/index.js",
     "test": "jest",
     "version": "npm run build"
   },

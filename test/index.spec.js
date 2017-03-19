@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { safeCoerce, safeMethodCall, safePropertyAccess } from '../index';
+import { safeCoerce, safeMethodCall, safePropertyAccess } from '../src/index';
 
 
 describe.skip('Safe Method Call', () => {
