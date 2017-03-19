@@ -1,6 +1,16 @@
 import { expect } from 'chai';
-import { safeCoerce, safePropertyAccess } from '../index';
+import { safeCoerce, safeMethodCall, safePropertyAccess } from '../index';
 
+
+describe('Safe Method Call', () => {
+  expect(() => {
+    const obj = {
+      some() {}
+    }
+    safeMethodCall(obj, 'foo');
+  })
+  .to.throw(TypeError, 'Method "foo" does not exist in given object');
+})
 
 describe('Safe Coerce', () => {
   it('should return values that pass', () => {
@@ -92,18 +102,33 @@ describe('Safe Property Access', () => {
     });
   });
 
-  it('should fail on undefined array values', () => {
-    expect(() => {
-      safePropertyAccess(['woo', 1], {
-        woo: [false]
-      });
-    })
-    .to.throw(TypeError, '"woo.1" is out of bounds');
+  describe('Array Access', () => {
+    it('should fail on undefined array values', () => {
+      expect(() => {
+        safePropertyAccess(['woo', 1], {
+          woo: [false]
+        });
+      })
+      .to.throw(TypeError, '"Object.woo[1]" is out of bounds');
 
-    expect(() => {
-      safePropertyAccess([0, 0, 0], ['', ['', ['']]]);
-    })
-    .to.throw(TypeError, '"0.0" is out of bounds');
+      expect(() => {
+        safePropertyAccess([0, 0, 0], ['', ['', ['']]]);
+      })
+      .to.throw(TypeError, '"Array[0][0]" is out of bounds');
+    });
+
+    it('should pass on in-bound array access', () => {
+      expect(() => {
+        safePropertyAccess([2, 3, 0], ['', '', ['', '', '', ['']]]);
+      });
+    });
+
+    it('should fail on out of bound array access', () => {
+      expect(() => {
+        safePropertyAccess([2, 3, 10], ['', '', ['', '', '', ['']]]);
+      })
+      .to.throw(TypeError, '"Array[2][3][10]" is out of bounds');
+    });
   });
 
   it('should fail on undefined objects', () => {
@@ -114,7 +139,7 @@ describe('Safe Property Access', () => {
         }
       });
     })
-    .to.throw(TypeError, '"soo.moo" is not defined');
+    .to.throw(TypeError, '"Object.soo.moo" is not defined');
   });
 
   it('should handle multiple object levels', () => {
@@ -130,7 +155,7 @@ describe('Safe Property Access', () => {
         }
       });
     })
-    .to.throw(TypeError, '"woo.loo.hi" is not defined');
+    .to.throw(TypeError, '"Object.woo.loo.hi" is not defined');
 
     expect(() => {
       safePropertyAccess(['foo', 'bar', '_MOO_', 'baz'], {
@@ -141,6 +166,6 @@ describe('Safe Property Access', () => {
         }
       });
     })
-    .to.throw(TypeError, '"foo.bar._MOO_" is not defined');
+    .to.throw(TypeError, '"Object.foo.bar._MOO_" is not defined');
   });
 });

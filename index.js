@@ -3,14 +3,39 @@
  */
 export function safePropertyAccess(protoChain: Array<string>, target: Object) {
   let ref = target;
+  let type;
+
+  if (Array.isArray(target)) {
+    type = 'Array'
+  } else if (typeof target === null) {
+    type = 'null'
+  } else if (typeof target === 'object') {
+    type = 'Object'
+  } else {
+    type = typeof target
+  }
+
+  const separators = []
+
+  separators.push(type)
 
   protoChain.forEach((each, index) => {
     if (typeof ref[each] === 'undefined') {
-      if (typeof ref.length === 'number') {
-        throw new TypeError(`"${protoChain.splice(0, index + 1).join('.')}" is out of bounds`);
+      if (typeof each === 'number') {
+        separators.push(`[${each}]`)
+      } else {
+        separators.push(`.${each}`)
       }
-      throw new TypeError(`"${protoChain.splice(0, index + 1).join('.')}" is not defined`);
+      if (typeof ref.length === 'number') {
+        throw new TypeError(`"${separators.join('')}" is out of bounds`);
+      }
+      throw new TypeError(`"${separators.join('')}" is not defined`);
     } else {
+      if (typeof each === 'number') {
+        separators.push(`[${each}]`)
+      } else {
+        separators.push(`.${each}`)
+      }
       ref = ref[each];
     }
   });
@@ -49,14 +74,17 @@ export function safeCoerce(left: any, operator: string, right: any) {
   }
 
   if (operator === '-=') { return left -= right; }
-  if (operator === '=-') { return left = -right; }
+  if (operator === '=-') { return left =- right; }
   if (operator === '+=') { return left += right; }
-  if (operator === '=+') { return left = +right; }
+  if (operator === '=+') { return left =+ right; }
   if (operator === '+') { return left + right; }
   if (operator === '-') { return left - right; }
 
   return eval(`${left} ${operator} ${right}`);
 }
+
+// @TODO
+export function safeMethodCall(): string {}
 
 // @TODO
 // function disallowAbstractEqualityComparison() {}
