@@ -89,6 +89,20 @@ describe('Safe Coerce', () => {
     .to.throw(TypeError, 'Unexpected coercion of type "null" and type "null" using "+" operator');
   });
 
+  it('should fail on coercion of undefined and undefined', () => {
+    expect(() => {
+      safeCoerce(undefined, '+', undefined);
+    })
+    .to.throw(TypeError, 'Unexpected coercion of type "undefined" and type "undefined" using "+" operator');
+  });
+
+  it('should fail on coercion of null and null', () => {
+    expect(() => {
+      safeCoerce(null, '+', null);
+    })
+    .to.throw(TypeError, 'Unexpected coercion of type "null" and type "null" using "+" operator');
+  });
+
   it('should fail on coercion of array and object', () => {
     expect(() => {
       safeCoerce([], '-', []);

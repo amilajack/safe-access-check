@@ -66,18 +66,14 @@ export function safeCoerce(left: any, operator: string, right: any) {
     throw new TypeError(errorMessage);
   }
 
-  if (left === null || right === null) {
-    throw new TypeError(errorMessage);
-  }
-
   if (!((
     typeof left === 'string' ||
     typeof left === 'number' ||
-    left.constructor == String
+    left instanceof String
   ) && (
     typeof right === 'string' ||
     typeof right === 'number' ||
-    right.constructor == String
+    right instanceof String
   ))) {
     throw new TypeError(errorMessage);
   }
