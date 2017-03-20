@@ -2,35 +2,37 @@ import { expect } from 'chai';
 import { safeCoerce, safeMethodCall, safePropertyAccess } from '../src/index';
 
 
+/* eslint no-new-wrappers: 0 */
+
 describe.skip('Safe Method Call', () => {
   expect(() => {
     const obj = {
-      some() {}
-    }
+      some() {},
+    };
     safeMethodCall(obj, 'foo');
   })
   .to.throw(TypeError, 'Method "foo" does not exist in given object');
-})
+});
 
 describe('Safe Coerce', () => {
   it('should return values that pass', () => {
-    expect(safeCoerce(1, '+', 1,)).to.equal(2);
-    expect(safeCoerce(10, '-', 10, )).to.equal(0);
+    expect(safeCoerce(1, '+', 1)).to.equal(2);
+    expect(safeCoerce(10, '-', 10)).to.equal(0);
   });
 
   it('should allow string concat', () => {
-    expect(safeCoerce('moo', '+', 10, )).to.equal('moo10');
+    expect(safeCoerce('moo', '+', 10)).to.equal('moo10');
   });
 
   it('should allow string concat reassignment', () => {
     const some = 'moo';
-    expect(safeCoerce(some, '+=', 10, )).to.equal('moo10');
-    expect(safeCoerce(10, '+', some, )).to.equal('10moo');
+    expect(safeCoerce(some, '+=', 10)).to.equal('moo10');
+    expect(safeCoerce(10, '+', some)).to.equal('10moo');
   });
 
   it('should allow new String() concat', () => {
-    expect(safeCoerce(new String('moo'), '+=', 10, )).to.equal('moo10');
-    expect(safeCoerce(new String('moo'), '+', new String('moo'), )).to.equal('moomoo');
+    expect(safeCoerce(new String('moo'), '+=', 10)).to.equal('moo10');
+    expect(safeCoerce(new String('moo'), '+', new String('moo'))).to.equal('moomoo');
   });
 
   it('should allow reassignment of references', () => {
@@ -47,28 +49,49 @@ describe('Safe Coerce', () => {
 
   it('should fail on coercion of array and object', () => {
     expect(() => {
-      safeCoerce([], '+', {}, );
+      safeCoerce([], '+', {});
     })
     .to.throw(TypeError, 'Unexpected coercion of type "array" and type "object" using "+" operator');
   });
 
   it('should fail on coercion of array and object', () => {
     expect(() => {
-      safeCoerce([], '-', {}, );
+      safeCoerce([], '-', {});
     })
     .to.throw(TypeError, 'Unexpected coercion of type "array" and type "object" using "-" operator');
   });
 
   it('should fail on coercion of array and object', () => {
     expect(() => {
-      safeCoerce([], '-=', {}, );
+      safeCoerce([], '-=', {});
     })
     .to.throw(TypeError, 'Unexpected coercion of type "array" and type "object" using "-=" operator');
   });
 
+  it('should fail on coercion of null and undefined', () => {
+    expect(() => {
+      safeCoerce(null, '+', undefined);
+    })
+    .to.throw(TypeError, 'Unexpected coercion of type "null" and type "undefined" using "+" operator');
+  });
+
+  it('should fail on coercion of array and undefined', () => {
+    expect(() => {
+      safeCoerce([], '+', undefined);
+    })
+    .to.throw(TypeError, 'Unexpected coercion of type "array" and type "undefined" using "+" operator');
+  });
+
+  it('should fail on coercion of null and null', () => {
+    expect(() => {
+      safeCoerce(null, '+', null);
+    })
+    .to.throw(TypeError, 'Unexpected coercion of type "null" and type "null" using "+" operator');
+  });
+
   it('should fail on coercion of array and object', () => {
     expect(() => {
-      safeCoerce([], '-', [], );
+      safeCoerce([], '-', []);
     })
     .to.throw(TypeError, 'Unexpected coercion of type "array" and type "array" using "-" operator');
   });
@@ -78,27 +101,27 @@ describe('Safe Property Access', () => {
   it('should access simply nested objects', () => {
     safePropertyAccess(['soo', 'moo'], {
       soo: {
-        moo: true
-      }
+        moo: true,
+      },
     });
   });
 
   it('should access deeply nested objects', () => {
     safePropertyAccess(['woo', 'loo', 'hi'], {
       soo: {
-        who: true
+        who: true,
       },
       woo: {
         loo: {
-          hi: false
-        }
-      }
+          hi: false,
+        },
+      },
     });
   });
 
   it('should access defined array values', () => {
     safePropertyAccess(['woo', 0], {
-      woo: [false]
+      woo: [false],
     });
   });
 
@@ -106,7 +129,7 @@ describe('Safe Property Access', () => {
     it('should fail on undefined array values', () => {
       expect(() => {
         safePropertyAccess(['woo', 1], {
-          woo: [false]
+          woo: [false],
         });
       })
       .to.throw(TypeError, '"Object.woo[1]" is out of bounds');
@@ -135,8 +158,8 @@ describe('Safe Property Access', () => {
     expect(() => {
       safePropertyAccess(['soo', 'moo'], {
         soo: {
-          who: true
-        }
+          who: true,
+        },
       });
     })
     .to.throw(TypeError, '"Object.soo.moo" is not defined');
@@ -146,13 +169,13 @@ describe('Safe Property Access', () => {
     expect(() => {
       safePropertyAccess(['woo', 'loo', 'hi'], {
         soo: {
-          who: true
+          who: true,
         },
         woo: {
           loo: {
-            no: false
-          }
-        }
+            no: false,
+          },
+        },
       });
     })
     .to.throw(TypeError, '"Object.woo.loo.hi" is not defined');
@@ -161,9 +184,9 @@ describe('Safe Property Access', () => {
       safePropertyAccess(['foo', 'bar', '_MOO_', 'baz'], {
         foo: {
           bar: {
-            baz: ''
-          }
-        }
+            baz: '',
+          },
+        },
       });
     })
     .to.throw(TypeError, '"Object.foo.bar._MOO_" is not defined');

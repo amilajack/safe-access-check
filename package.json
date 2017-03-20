@@ -7,7 +7,9 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "cross-env NODE_ENV=production rm -rf lib && mkdir lib && babel src/index.js --out-file lib/index.js",
-    "test": "jest",
+    "lint": "eslint --cache --format=node_modules/eslint-formatter-pretty .",
+    "spec": "jest",
+    "test": "npm run lint && npm run spec",
     "version": "npm run build"
   },
   "files": [
@@ -24,10 +26,15 @@
   "devDependencies": {
     "babel": "^6.23.0",
     "babel-cli": "^6.24.0",
+    "babel-eslint": "^7.1.1",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-preset-env": "^1.2.2",
     "chai": "^3.5.0",
     "cross-env": "^3.2.4",
+    "eslint": "^3.18.0",
+    "eslint-config-airbnb-base": "^11.1.1",
+    "eslint-formatter-pretty": "^1.1.0",
+    "eslint-plugin-import": "^2.2.0",
     "jest-cli": "^19.0.2"
   }
 }
