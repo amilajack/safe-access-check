@@ -2,7 +2,7 @@
   "name": "safe-access-check",
   "author": "Amila Welihinda",
   "license": "MIT",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Minimal library for safe property access",
   "main": "lib/index.js",
   "scripts": {
