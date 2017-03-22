@@ -1,5 +1,9 @@
 import { expect } from 'chai';
-import { safeCoerce, safeMethodCall, safePropertyAccess } from '../src/index';
+import {
+  safeCoerce,
+  safeMethodCall,
+  safePropertyAccess,
+} from '../src/index';
 
 
 /* eslint no-new-wrappers: 0 */
@@ -120,6 +124,13 @@ describe('Safe Property Access', () => {
     });
   });
 
+  it('should fail on access of single depth', () => {
+    expect(() => {
+      safePropertyAccess(['soo', 'moo'], {});
+    })
+    .to.throw(TypeError, 'Property "soo" does not exist in "Object"');
+  });
+
   it('should access deeply nested objects', () => {
     safePropertyAccess(['woo', 'loo', 'hi'], {
       soo: {
@@ -140,7 +151,41 @@ describe('Safe Property Access', () => {
   });
 
   describe('Array Access', () => {
-    it('should fail on undefined array values', () => {
+    describe('Return Values', () => {
+      it('should access mixed objects', () => {
+        expect(safePropertyAccess(['woo', 1], {
+          woo: [false, true],
+        }))
+        .to.equal(true);
+      });
+
+      it('should access deeply nested values', () => {
+        expect(safePropertyAccess([0, 0, 0, 0], [[[['foo']]]]))
+          .to.equal('foo');
+      });
+
+      it('should access deeply nested object properties', () => {
+        expect(safePropertyAccess(['foo', 'bar', 'baz'], {
+          foo: {
+            bar: {
+              baz: 'baz',
+            },
+          },
+        }))
+        .to.equal('baz');
+      });
+
+      it('should fail on access of incorrect type', () => {
+        expect(() => {
+          safePropertyAccess(['foo', 'bar', 'baz'], {
+            foo: undefined,
+          });
+        })
+        .to.throw(TypeError, 'Cannot access property "bar" on type "undefined"');
+      });
+    });
+
+    it('should fail on out of bounds array access', () => {
       expect(() => {
         safePropertyAccess(['woo', 1], {
           woo: [false],
@@ -151,7 +196,9 @@ describe('Safe Property Access', () => {
       expect(() => {
         safePropertyAccess([0, 0, 0], ['', ['', ['']]]);
       })
-      .to.throw(TypeError, '"Array[0][0]" is out of bounds');
+      .to.throw(TypeError, 'Cannot access property "0" on type "string"');
+
+      expect(safePropertyAccess([0, 0, 0], [[['']]])).to.equal('');
     });
 
     it('should pass on in-bound array access', () => {
@@ -176,7 +223,7 @@ describe('Safe Property Access', () => {
         },
       });
     })
-    .to.throw(TypeError, '"Object.soo.moo" is not defined');
+    .to.throw(TypeError, 'Property "moo" does not exist in "Object.soo"');
   });
 
   it('should handle multiple object levels', () => {
@@ -192,7 +239,7 @@ describe('Safe Property Access', () => {
         },
       });
     })
-    .to.throw(TypeError, '"Object.woo.loo.hi" is not defined');
+    .to.throw(TypeError, 'Property "hi" does not exist in "Object.woo.loo"');
 
     expect(() => {
       safePropertyAccess(['foo', 'bar', '_MOO_', 'baz'], {
@@ -203,6 +250,6 @@ describe('Safe Property Access', () => {
         },
       });
     })
-    .to.throw(TypeError, '"Object.foo.bar._MOO_" is not defined');
+    .to.throw(TypeError, 'Property "_MOO_" does not exist in "Object.foo.bar"');
   });
 });
