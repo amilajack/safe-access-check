@@ -30,13 +30,13 @@ some = safeCoerce('moo', '+', 10) // 'moo10'
 [] + {} // "[object Object]"
 
 safeCoerce([], '+', {})
-// Throws TypeError: 'Unexpected coercion of type "object" and
+// TypeError: 'Unexpected coercion of type "object" and
 // type "array" using "+" operator'
 
 NaN + undefined // NaN
 
 safeCoerce(NaN, '+', undefined);
-// Throws TypeError: Unexpected coercion of type "NaN" and type
+// TypeError: Unexpected coercion of type "NaN" and type
 // "undefined" using "+" operator
 
 
@@ -52,10 +52,10 @@ const obj = {
 }
 
 obj.foo.bar._MOO_.baz;
-// Throws TypeError: 'Cannot read property 'baz' of undefined'
+// TypeError: 'Cannot read property 'baz' of undefined'
 
 safePropertyAccess(['foo', 'bar', '_MOO_', 'baz'], obj);
-// Throws TypeError: '"foo.bar._MOO_" is not defined'
+// TypeError: Property "_MOO_" does not exist in "Object.foo._MOO_"
 
 
 
@@ -68,5 +68,5 @@ const obj = {
 obj.woo[1] // undefined
 
 safePropertyAccess(['woo', 1], obj)
-// Throws TypeError: '"woo.1" is out of bounds'
+// TypeError: '"woo[1]" is out of bounds'
 ```
