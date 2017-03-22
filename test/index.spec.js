@@ -181,7 +181,7 @@ describe('Safe Property Access', () => {
             foo: undefined,
           });
         })
-        .to.throw(TypeError, 'Cannot access property "bar" on type "undefined"');
+        .to.throw(TypeError, 'Cannot access property "bar" on type "undefined" (Object.foo)');
       });
     });
 
@@ -196,7 +196,7 @@ describe('Safe Property Access', () => {
       expect(() => {
         safePropertyAccess([0, 0, 0], ['', ['', ['']]]);
       })
-      .to.throw(TypeError, 'Cannot access property "0" on type "string"');
+      .to.throw(TypeError, 'Cannot access property "0" on type "string" (Array[0])');
 
       expect(safePropertyAccess([0, 0, 0], [[['']]])).to.equal('');
     });

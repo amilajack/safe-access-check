@@ -30,7 +30,7 @@ export function safePropertyAccess(protoChain: Array<string | number>, target: O
   protoChain.forEach((each: string | number) => {
     // If type of
     if (!(type === 'Array' || type === 'Object')) {
-      throw new TypeError(`Cannot access property "${each}" on type "${type}"`);
+      throw new TypeError(`Cannot access property "${each}" on type "${type}" (${separators.join('')})`);
     }
 
     // Check if the access not defined, throw error and append proto to
