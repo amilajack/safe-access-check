@@ -16,6 +16,13 @@ function getType(target: any): string {
   return type;
 }
 
+function formatType(type: any): 'array' | 'NaN' | 'null' {
+  if (Array.isArray(type)) return 'array';
+  if (Number.isNaN(type)) return 'NaN';
+  if (type === null) return 'null';
+  return typeof type;
+}
+
 /**
  * Safely access properties and indexs on arrays and objects
  * @TODO: Add `opts` param to allow for configutation of strictness
@@ -48,23 +55,19 @@ export function safePropertyAccess(protoChain: Array<string | number>, target: O
       if (typeof each === 'number') {
         separators.push(`[${each}]`);
       }
-      if (typeof ref.length === 'number') {
+      if (Array.isArray(ref)) {
         if (each > ref.length - 1) {
           throw new TypeError(`"${separators.join('')}" is out of bounds`);
         }
+      }
+      if (!(typeof each === 'string' || typeof each === 'number')) {
+        throw new TypeError(`Type "${formatType(each)}" cannot be used to access ${separators.join('')}`);
       }
       throw new TypeError(`Property "${each}" does not exist in "${separators.join('')}"`);
     }
   });
 
   return ref;
-}
-
-function formatType(type: any): 'array' | 'NaN' | 'null' {
-  if (Array.isArray(type)) return 'array';
-  if (Number.isNaN(type)) return 'NaN';
-  if (type === null) return 'null';
-  return typeof type;
 }
 
 /**
