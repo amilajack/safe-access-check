@@ -1,22 +1,21 @@
 /* eslint eqeqeq: 0, no-eval: 0, no-param-reassign: 0, no-return-assign: 0 */
 
-function getType(target: any): string {
-  let type;
-
+export function getType(target: any): string {
   if (Array.isArray(target)) {
-    type = 'Array';
+    return 'Array';
   } else if (target === null) {
-    type = 'null';
+    return 'null';
+  } else if (target instanceof String) {
+    return 'string';
+  } else if (typeof target === 'function') {
+    return 'Function';
   } else if (typeof target === 'object') {
-    type = 'Object';
-  } else {
-    type = typeof target;
+    return 'Object';
   }
-
-  return type;
+  return typeof target;
 }
 
-function formatType(type: any): 'array' | 'NaN' | 'null' {
+export function formatType(type: any): 'array' | 'NaN' | 'null' {
   if (Array.isArray(type)) return 'array';
   if (Number.isNaN(type)) return 'NaN';
   if (type === null) return 'null';
@@ -36,7 +35,7 @@ export function safePropertyAccess(protoChain: Array<string | number>, target: O
 
   protoChain.forEach((each: string | number) => {
     // If type of
-    if (!(type === 'Array' || type === 'Object')) {
+    if (!(type === 'Array' || type === 'Object' || type === 'Function')) {
       throw new TypeError(`Cannot access property "${each}" on type "${type}" (${separators.join('')})`);
     }
 

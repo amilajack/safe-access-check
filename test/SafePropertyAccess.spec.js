@@ -76,6 +76,37 @@ describe('Safe Property Access', () => {
         .to.throw(TypeError, 'Type "function" cannot be used to access Array[0]');
       });
 
+      it('should pass on function access', () => {
+        const fn = () => 1;
+        safePropertyAccess(['toString'], fn);
+      });
+
+      it('should pass on class access', () => {
+        class Some {
+          foo() {} // eslint-disable-line
+          static doo() {}
+        }
+        const some = new Some();
+        safePropertyAccess(['foo'], some);
+        safePropertyAccess(['prototype'], Some);
+        safePropertyAccess(['prototype', 'toString'], Some);
+
+        chaiExpect(() => {
+          safePropertyAccess(['doo'], some);
+        })
+        .to.throw(TypeError, 'Property "doo" does not exist in "Object"');
+
+        chaiExpect(() => {
+          safePropertyAccess(['foo'], Some);
+        })
+        .to.throw(TypeError, 'Property "foo" does not exist in "Function"');
+
+        chaiExpect(() => {
+          safePropertyAccess(['moo'], Some);
+        })
+        .to.throw(TypeError, 'Property "moo" does not exist in "Function"');
+      });
+
       it('should access property names with string Object', () => {
         const property = new String('some'); // eslint-disable-line
         const property2 = new String('moo'); // eslint-disable-line
