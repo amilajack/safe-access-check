@@ -55,12 +55,12 @@ describe('Safe Property Access', () => {
         chaiExpect(() => {
           safePropertyAccess([{}], [[[['foo']]]]);
         })
-        .to.throw(TypeError, 'Type "object" cannot be used to access Array');
+        .to.throw(TypeError, 'Type "Object" cannot be used to access Array');
 
         chaiExpect(() => {
           safePropertyAccess(['some', {}], { some: {} });
         })
-        .to.throw(TypeError, 'Type "object" cannot be used to access Object.some');
+        .to.throw(TypeError, 'Type "Object" cannot be used to access Object.some');
       });
 
       it('should fail on function access', () => {
@@ -68,12 +68,12 @@ describe('Safe Property Access', () => {
         chaiExpect(() => {
           safePropertyAccess([fn], [1, 2, 3]);
         })
-        .to.throw(TypeError, 'Type "function" cannot be used to access Array');
+        .to.throw(TypeError, 'Type "Function" cannot be used to access Array');
 
         chaiExpect(() => {
           safePropertyAccess([0, fn], [[1, 2, 3]]);
         })
-        .to.throw(TypeError, 'Type "function" cannot be used to access Array[0]');
+        .to.throw(TypeError, 'Type "Function" cannot be used to access Array[0]');
       });
 
       it('should pass on function access', () => {

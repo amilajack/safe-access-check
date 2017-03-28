@@ -1,25 +1,26 @@
 /* eslint eqeqeq: 0, no-eval: 0, no-param-reassign: 0, no-return-assign: 0 */
 
-export function getType(target: any): string {
+type supportedTypes
+  = 'string' | 'String' | 'Array' | 'Function' | 'Object' | 'number' | 'Number' | 'NaN' | 'null' | 'undefined';
+
+export function getType(target: any): supportedTypes {
   if (Array.isArray(target)) {
     return 'Array';
   } else if (target === null) {
     return 'null';
+  }
+  if (Number.isNaN(target)) {
+    return 'NaN';
+  } else if (target instanceof Number) {
+    return 'Number';
   } else if (target instanceof String) {
-    return 'string';
+    return 'String';
   } else if (typeof target === 'function') {
     return 'Function';
   } else if (typeof target === 'object') {
     return 'Object';
   }
   return typeof target;
-}
-
-export function formatType(type: any): 'array' | 'NaN' | 'null' {
-  if (Array.isArray(type)) return 'array';
-  if (Number.isNaN(type)) return 'NaN';
-  if (type === null) return 'null';
-  return typeof type;
 }
 
 /**
@@ -60,7 +61,7 @@ export function safePropertyAccess(protoChain: Array<string | number>, target: O
         }
       }
       if (!(typeof each === 'string' || typeof each === 'number')) {
-        throw new TypeError(`Type "${formatType(each)}" cannot be used to access ${separators.join('')}`);
+        throw new TypeError(`Type "${getType(each)}" cannot be used to access ${separators.join('')}`);
       }
       throw new TypeError(`Property "${each}" does not exist in "${separators.join('')}"`);
     }
@@ -74,20 +75,22 @@ export function safePropertyAccess(protoChain: Array<string | number>, target: O
  */
 export function safeCoerce(left: any, operator: string, right: any) {
   const errorMessage =
-    `Unexpected coercion of type "${formatType(left)}" and type "${formatType(right)}" using "${operator}" operator`;
+    `Unexpected coercion of type "${getType(left)}" and type "${getType(right)}" using "${operator}" operator`;
 
   if (Number.isNaN(left) || Number.isNaN(right)) {
     throw new TypeError(errorMessage);
   }
 
+  // Terse way of handling both type 'string' and 'String'
+  const leftLowercaseType = getType(left).toLowerCase();
+  const rightLowercaseType = getType(right).toLowerCase();
+
   if (!((
-    typeof left === 'string' ||
-    typeof left === 'number' ||
-    left instanceof String
+    leftLowercaseType === 'string' ||
+    leftLowercaseType === 'number'
   ) && (
-    typeof right === 'string' ||
-    typeof right === 'number' ||
-    right instanceof String
+    rightLowercaseType === 'string' ||
+    rightLowercaseType === 'number'
   ))) {
     throw new TypeError(errorMessage);
   }
@@ -99,7 +102,23 @@ export function safeCoerce(left: any, operator: string, right: any) {
   if (operator === '+') { return left + right; }
   if (operator === '-') { return left - right; }
 
-  return eval(`${left} ${operator} ${right}`);
+  // Check if is comparison
+  if (operator.includes('>') || operator.includes('<')) {
+    if (leftLowercaseType !== rightLowercaseType) {
+      const comparisonErrorMessage =
+        `Unexpected comparison of type "${getType(left)}" and type "${getType(right)}" using "${operator}" operator`;
+      throw new TypeError(comparisonErrorMessage);
+    }
+  }
+
+  return eval(
+    [
+      leftLowercaseType === 'string' ? `"${left}"` : left,
+      operator,
+      rightLowercaseType === 'string' ? `"${right}"` : right
+    ]
+    .join(' ')
+  );
 }
 
 // @TODO

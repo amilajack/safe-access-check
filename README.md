@@ -30,8 +30,8 @@ some = safeCoerce('moo', '+', 10) // 'moo10'
 [] + {} // "[object Object]"
 
 safeCoerce([], '+', {})
-// TypeError: 'Unexpected coercion of type "object" and
-// type "array" using "+" operator'
+// TypeError: 'Unexpected coercion of type "Object" and
+// type "Array" using "+" operator'
 
 NaN + undefined // NaN
 
@@ -39,6 +39,9 @@ safeCoerce(NaN, '+', undefined);
 // TypeError: Unexpected coercion of type "NaN" and type
 // "undefined" using "+" operator
 
+safeCoerce(new String('12'), '>', 12);
+// TypeError: Unexpected comparison of type "String" and type
+// "number" using ">" operator
 
 
 // 3. Usage for better undefined propagation errors
