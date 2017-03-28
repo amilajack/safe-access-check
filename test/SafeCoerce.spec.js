@@ -15,6 +15,37 @@ describe.skip('Safe Method Call', () => {
 });
 
 describe('Safe Coerce', () => {
+  describe('Comparison', () => {
+    it('should compare values with ">" operator', () => {
+      chaiExpect(safeCoerce('b', '>', 'aaa')).to.equal(true);
+    });
+
+    it('should compare new String() values with ">" operator', () => {
+      const str1 = new String('b');
+      const str2 = new String('aaa');
+      chaiExpect(safeCoerce(str1, '>', str2)).to.equal(true);
+      chaiExpect(safeCoerce(new String('a'), '<', 'bbb')).to.equal(true);
+    });
+
+    it('should fail on comparison of numbers and strings', () => {
+      chaiExpect(() => {
+        safeCoerce(new String('12'), '<', 12);
+      })
+      .to.throw(TypeError, 'Unexpected comparison of type "String" and type "number" using "<" operator');
+    });
+
+    it('should fail on comparison of unexpected types', () => {
+      chaiExpect(() => {
+        safeCoerce([], '>', {});
+      })
+      .to.throw(TypeError, 'Unexpected coercion of type "Array" and type "Object" using ">" operator');
+      chaiExpect(() => {
+        safeCoerce({}, '>', []);
+      })
+      .to.throw(TypeError, 'Unexpected coercion of type "Object" and type "Array" using ">" operator');
+    });
+  });
+
   it('should return values that pass', () => {
     chaiExpect(safeCoerce(1, '+', 1)).to.equal(2);
     chaiExpect(safeCoerce(10, '-', 10)).to.equal(0);
@@ -51,14 +82,14 @@ describe('Safe Coerce', () => {
     chaiExpect(() => {
       safeCoerce([], '+', {});
     })
-    .to.throw(TypeError, 'Unexpected coercion of type "array" and type "object" using "+" operator');
+    .to.throw(TypeError, 'Unexpected coercion of type "Array" and type "Object" using "+" operator');
   });
 
   it('should fail on coercion of fn and object', () => {
     chaiExpect(() => {
       safeCoerce(() => 1, '+', {});
     })
-    .to.throw(TypeError, 'Unexpected coercion of type "function" and type "object" using "+" operator');
+    .to.throw(TypeError, 'Unexpected coercion of type "Function" and type "Object" using "+" operator');
   });
 
 
@@ -66,14 +97,14 @@ describe('Safe Coerce', () => {
     chaiExpect(() => {
       safeCoerce([], '-', {});
     })
-    .to.throw(TypeError, 'Unexpected coercion of type "array" and type "object" using "-" operator');
+    .to.throw(TypeError, 'Unexpected coercion of type "Array" and type "Object" using "-" operator');
   });
 
   it('should fail on coercion of array and object using "-=" operator', () => {
     chaiExpect(() => {
       safeCoerce([], '-=', {});
     })
-    .to.throw(TypeError, 'Unexpected coercion of type "array" and type "object" using "-=" operator');
+    .to.throw(TypeError, 'Unexpected coercion of type "Array" and type "Object" using "-=" operator');
   });
 
   it('should fail on coercion of null and undefined', () => {
@@ -87,7 +118,7 @@ describe('Safe Coerce', () => {
     chaiExpect(() => {
       safeCoerce([], '+', undefined);
     })
-    .to.throw(TypeError, 'Unexpected coercion of type "array" and type "undefined" using "+" operator');
+    .to.throw(TypeError, 'Unexpected coercion of type "Array" and type "undefined" using "+" operator');
   });
 
   it('should fail on coercion of null and null', () => {
@@ -115,6 +146,6 @@ describe('Safe Coerce', () => {
     chaiExpect(() => {
       safeCoerce([], '-', []);
     })
-    .to.throw(TypeError, 'Unexpected coercion of type "array" and type "array" using "-" operator');
+    .to.throw(TypeError, 'Unexpected coercion of type "Array" and type "Array" using "-" operator');
   });
 });
