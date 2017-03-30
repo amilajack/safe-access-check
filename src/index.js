@@ -77,13 +77,22 @@ export function safeCoerce(left: any, operator: string, right: any) {
   const errorMessage =
     `Unexpected coercion of type "${getType(left)}" and type "${getType(right)}" using "${operator}" operator`;
 
-  if (Number.isNaN(left) || Number.isNaN(right)) {
-    throw new TypeError(errorMessage);
-  }
-
   // Terse way of handling both type 'string' and 'String'
   const leftLowercaseType = getType(left).toLowerCase();
   const rightLowercaseType = getType(right).toLowerCase();
+
+  // Check if is comparison
+  if (operator.includes('>') || operator.includes('<')) {
+    if (leftLowercaseType !== rightLowercaseType) {
+      const comparisonErrorMessage =
+        `Unexpected comparison of type "${getType(left)}" and type "${getType(right)}" using "${operator}" operator`;
+      throw new TypeError(comparisonErrorMessage);
+    }
+  }
+
+  if (Number.isNaN(left) || Number.isNaN(right)) {
+    throw new TypeError(errorMessage);
+  }
 
   if (!((
     leftLowercaseType === 'string' ||
@@ -101,15 +110,6 @@ export function safeCoerce(left: any, operator: string, right: any) {
   if (operator === '=+') { return left = +right; }
   if (operator === '+') { return left + right; }
   if (operator === '-') { return left - right; }
-
-  // Check if is comparison
-  if (operator.includes('>') || operator.includes('<')) {
-    if (leftLowercaseType !== rightLowercaseType) {
-      const comparisonErrorMessage =
-        `Unexpected comparison of type "${getType(left)}" and type "${getType(right)}" using "${operator}" operator`;
-      throw new TypeError(comparisonErrorMessage);
-    }
-  }
 
   return eval(
     [

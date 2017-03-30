@@ -38,11 +38,11 @@ describe('Safe Coerce', () => {
       chaiExpect(() => {
         safeCoerce([], '>', {});
       })
-      .to.throw(TypeError, 'Unexpected coercion of type "Array" and type "Object" using ">" operator');
+      .to.throw(TypeError, 'Unexpected comparison of type "Array" and type "Object" using ">" operator');
       chaiExpect(() => {
         safeCoerce({}, '>', []);
       })
-      .to.throw(TypeError, 'Unexpected coercion of type "Object" and type "Array" using ">" operator');
+      .to.throw(TypeError, 'Unexpected comparison of type "Object" and type "Array" using ">" operator');
     });
   });
 
