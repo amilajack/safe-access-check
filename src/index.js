@@ -1,7 +1,18 @@
-/* eslint eqeqeq: 0, no-eval: 0, no-param-reassign: 0, no-return-assign: 0 */
+/*
+  eslint eqeqeq: 0,
+  no-eval: 0,
+  no-param-reassign: 0,
+  no-return-assign: 0,
+  no-prototype-builtins: 0
+*/
 
 type supportedTypes
   = 'string' | 'String' | 'Array' | 'Function' | 'Object' | 'number' | 'Number' | 'NaN' | 'null' | 'undefined';
+
+// @HACK: Shit on global scope for now. Can't find out how to
+//        use babel to destructure imports properly
+global.safeCoerce = safeCoerce; // eslint-disable-line
+global.safePropertyAccess = safePropertyAccess;  // eslint-disable-line
 
 export function getType(target: any): supportedTypes {
   if (Array.isArray(target)) {
@@ -23,6 +34,10 @@ export function getType(target: any): supportedTypes {
   return typeof target;
 }
 
+export function getLowercaseType(target: any): string {
+  return getType(target).toLowerCase();
+}
+
 /**
  * Safely access properties and indexs on arrays and objects
  * @TODO: Add `opts` param to allow for configutation of strictness
@@ -35,15 +50,31 @@ export function safePropertyAccess(protoChain: Array<string | number>, target: O
   separators.push(type);
 
   protoChain.forEach((each: string | number) => {
-    // If type of
-    if (!(type === 'Array' || type === 'Object' || type === 'Function')) {
-      throw new TypeError(`Cannot access property "${each}" on type "${type}" (${separators.join('')})`);
+    let test;
+
+    // `in` operator can't be used with primative strings. Need to use
+    // `hasOwnProperty` method
+    if (type === 'string') {
+      test = ref.hasOwnProperty(each);
+    } else {
+      // If not type of special type (ex. Array, Object, or Function), throw error
+      if (!(
+        type === 'Array' ||
+        type === 'Object' ||
+        type === 'Function' ||
+        type === 'Number' ||
+        type === 'String'
+      )) {
+        throw new TypeError(`Cannot access property "${each}" on type "${type}" ("${separators.join('')}")`);
+      }
+
+      test = each in ref || ref.hasOwnProperty(each);
     }
 
     // Check if the access not defined, throw error and append proto to
     // `separators`
-    if (each in ref) {
-      if (typeof each === 'number') {
+    if (test === true) {
+      if (getLowercaseType(each) === 'number') {
         separators.push(`[${each}]`);
       } else {
         separators.push(`.${each}`);
@@ -52,18 +83,23 @@ export function safePropertyAccess(protoChain: Array<string | number>, target: O
       type = getType(ref);
     } else {
       // Check if the access an array access
-      if (typeof each === 'number') {
+      if (getLowercaseType(each) === 'number') {
         separators.push(`[${each}]`);
       }
+      // Perform array out of bounds check
       if (Array.isArray(ref)) {
         if (each > ref.length - 1) {
           throw new TypeError(`"${separators.join('')}" is out of bounds`);
         }
       }
-      if (!(typeof each === 'string' || typeof each === 'number')) {
-        throw new TypeError(`Type "${getType(each)}" cannot be used to access ${separators.join('')}`);
+      if (!(getLowercaseType(each) === 'string' || getLowercaseType(each) === 'number')) {
+        throw new TypeError(
+          `Type "${getType(each)}" cannot be used to access "${separators.join('')}"`
+        );
       }
-      throw new TypeError(`Property "${each}" does not exist in "${separators.join('')}"`);
+      throw new TypeError(
+        `Property "${each}" does not exist in "${separators.join('')}", "${separators.splice(0, separators.length - 1).join('')}" is type "${type}"`
+      );
     }
   });
 
@@ -78,10 +114,10 @@ export function safeCoerce(left: any, operator: string, right: any) {
     `Unexpected coercion of type "${getType(left)}" and type "${getType(right)}" using "${operator}" operator`;
 
   // Terse way of handling both type 'string' and 'String'
-  const leftLowercaseType = getType(left).toLowerCase();
-  const rightLowercaseType = getType(right).toLowerCase();
+  const leftLowercaseType = getLowercaseType(left);
+  const rightLowercaseType = getLowercaseType(right);
 
-  // Check if is comparison
+  // Check if operator is comparison
   if (operator.includes('>') || operator.includes('<')) {
     if (leftLowercaseType !== rightLowercaseType) {
       const comparisonErrorMessage =
@@ -90,6 +126,7 @@ export function safeCoerce(left: any, operator: string, right: any) {
     }
   }
 
+  // If either left or right is NaN, throw
   if (Number.isNaN(left) || Number.isNaN(right)) {
     throw new TypeError(errorMessage);
   }
@@ -123,6 +160,3 @@ export function safeCoerce(left: any, operator: string, right: any) {
 
 // @TODO
 export function safeMethodCall(): string {}
-
-// @TODO
-// function disallowAbstractEqualityComparison() {}

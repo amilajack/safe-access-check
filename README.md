@@ -7,6 +7,11 @@ safe-access-check
 
 **⚠️ Experimental. Intended to be used by compilers and code checkers ⚠️**
 
+## Todos
+- [ ] Existential check of enumerable properties
+- [ ] Optional logging of values recieved
+- [ ] Clearer, more consistent error messages
+
 ## Installation
 ```bash
 npm install --save-dev safe-access-check
@@ -16,17 +21,15 @@ npm install --save-dev safe-access-check
 ```js
 import { safeCoerce, safePropertyAccess } from 'safe-access-check';
 
-
-
+// ------------------------------------------------
 // 1. Usage as an expression
-// -------------------------
+// ------------------------------------------------
 let some = moo + '10' // 'moo10'
 some = safeCoerce('moo', '+', 10) // 'moo10'
 
-
-
+// ------------------------------------------------
 // 2. Usage for coercion safeguard
-// -------------------------------
+// ------------------------------------------------
 [] + {} // "[object Object]"
 
 safeCoerce([], '+', {})
@@ -43,7 +46,7 @@ safeCoerce(new String('12'), '>', 12);
 // TypeError: Unexpected comparison of type "String" and type
 // "number" using ">" operator
 
-
+// ------------------------------------------------
 // 3. Usage for better undefined propagation errors
 // ------------------------------------------------
 const obj = {
@@ -60,10 +63,9 @@ obj.foo.bar._MOO_.baz;
 safePropertyAccess(['foo', 'bar', '_MOO_', 'baz'], obj);
 // TypeError: Property "_MOO_" does not exist in "Object.foo._MOO_"
 
-
-
+// ------------------------------------------------
 // 4. Usage as out of bounds check
-// -------------------------------
+// ------------------------------------------------
 const obj = {
   woo: ['']
 }

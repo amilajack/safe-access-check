@@ -31,6 +31,10 @@ describe('Safe Property Access', () => {
     });
   });
 
+  it('should work with autoboxed methods', () => {
+    safePropertyAccess(['length'], 'foo');
+  });
+
   it('should access defined array values', () => {
     safePropertyAccess(['woo', 0], {
       woo: [false]
@@ -55,12 +59,12 @@ describe('Safe Property Access', () => {
         chaiExpect(() => {
           safePropertyAccess([{}], [[[['foo']]]]);
         })
-        .to.throw(TypeError, 'Type "Object" cannot be used to access Array');
+        .to.throw(TypeError, 'Type "Object" cannot be used to access "Array"');
 
         chaiExpect(() => {
           safePropertyAccess(['some', {}], { some: {} });
         })
-        .to.throw(TypeError, 'Type "Object" cannot be used to access Object.some');
+        .to.throw(TypeError, 'Type "Object" cannot be used to access "Object.some"');
       });
 
       it('should fail on function access', () => {
@@ -68,12 +72,12 @@ describe('Safe Property Access', () => {
         chaiExpect(() => {
           safePropertyAccess([fn], [1, 2, 3]);
         })
-        .to.throw(TypeError, 'Type "Function" cannot be used to access Array');
+        .to.throw(TypeError, 'Type "Function" cannot be used to access "Array"');
 
         chaiExpect(() => {
           safePropertyAccess([0, fn], [[1, 2, 3]]);
         })
-        .to.throw(TypeError, 'Type "Function" cannot be used to access Array[0]');
+        .to.throw(TypeError, 'Type "Function" cannot be used to access "Array[0]"');
       });
 
       it('should pass on function access', () => {
@@ -141,7 +145,7 @@ describe('Safe Property Access', () => {
             foo: undefined
           });
         })
-        .to.throw(TypeError, 'Cannot access property "bar" on type "undefined" (Object.foo)');
+        .to.throw(TypeError, 'Cannot access property "bar" on type "undefined" ("Object.foo")');
       });
     });
 
@@ -156,7 +160,7 @@ describe('Safe Property Access', () => {
       chaiExpect(() => {
         safePropertyAccess([0, 0, 0], ['', ['', ['']]]);
       })
-      .to.throw(TypeError, 'Cannot access property "0" on type "string" (Array[0])');
+      .to.throw(TypeError, 'Property "0" does not exist in "Array[0][0]", "Array[0]" is type "string');
 
       expect(safePropertyAccess([0, 0, 0], [[['']]])).toEqual('');
     });
