@@ -1,9 +1,10 @@
 /*
-  eslint eqeqeq: 0,
-  no-eval: 0,
-  no-param-reassign: 0,
-  no-return-assign: 0,
-  no-prototype-builtins: 0
+  eslint
+    eqeqeq: 0,
+    no-eval: 0,
+    no-param-reassign: 0,
+    no-return-assign: 0,
+    no-prototype-builtins: 0
 */
 
 type supportedTypes
@@ -98,7 +99,7 @@ export function safePropertyAccess(protoChain: Array<string | number>, target: O
         );
       }
       throw new TypeError(
-        `Property "${each}" does not exist in "${separators.join('')}", "${separators.splice(0, separators.length - 1).join('')}" is type "${type}"`
+        `Property "${each}" does not exist in "${separators.join('')}"`
       );
     }
   });

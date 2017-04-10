@@ -160,7 +160,7 @@ describe('Safe Property Access', () => {
       chaiExpect(() => {
         safePropertyAccess([0, 0, 0], ['', ['', ['']]]);
       })
-      .to.throw(TypeError, 'Property "0" does not exist in "Array[0][0]", "Array[0]" is type "string');
+      .to.throw(TypeError, 'Property "0" does not exist in "Array[0][0]"');
 
       expect(safePropertyAccess([0, 0, 0], [[['']]])).toEqual('');
     });
