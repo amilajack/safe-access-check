@@ -15,9 +15,63 @@ describe.skip('Safe Method Call', () => {
 });
 
 describe('Safe Coerce', () => {
+  describe('Multiple Operators', () => {
+    it('should work with multiplication operator', () => {
+      chaiExpect(() => {
+        safeCoerce('some', '*', 10);
+      })
+      .to.throw(TypeError, 'Unexpected coercion of type "string" and type "number" using "*" operator');
+      chaiExpect(() => {
+        safeCoerce({}, '*', 10);
+      })
+      .to.throw(TypeError, 'Unexpected coercion of type "Object" and type "number" using "*" operator');
+    });
+
+    it('should work with division operator', () => {
+      chaiExpect(() => {
+        safeCoerce('some', '/', 10);
+      })
+      .to.throw(TypeError, 'Unexpected coercion of type "string" and type "number" using "/" operator');
+      chaiExpect(() => {
+        safeCoerce({}, '/', 10);
+      })
+      .to.throw(TypeError, 'Unexpected coercion of type "Object" and type "number" using "/" operator');
+    });
+
+    it('should work with exponent operator', () => {
+      chaiExpect(() => {
+        safeCoerce('some', '**', 10);
+        safeCoerce({}, '**', 10);
+      })
+      .to.throw(TypeError, 'Unexpected coercion of type "string" and type "number" using "**" operator');
+      chaiExpect(() => {
+        safeCoerce({}, '**', 10);
+      })
+      .to.throw(TypeError, 'Unexpected coercion of type "Object" and type "number" using "**" operator');
+    });
+
+    it('should work with subtraction operator', () => {
+      chaiExpect(() => {
+        safeCoerce('some', '-', 10);
+      })
+      .to.throw(TypeError, 'Unexpected coercion of type "string" and type "number" using "-" operator');
+      chaiExpect(() => {
+        safeCoerce({}, '-', 10);
+      })
+      .to.throw(TypeError, 'Unexpected coercion of type "Object" and type "number" using "-" operator');
+    });
+  });
+
   describe('Comparison', () => {
     it('should compare values with ">" operator', () => {
       chaiExpect(safeCoerce('b', '>', 'aaa')).to.equal(true);
+    });
+
+    it('should compare numbers', () => {
+      const num1 = 1;
+      const num2 = new Number(1);
+      chaiExpect(safeCoerce(num1, '>', num2)).to.equal(false);
+      chaiExpect(safeCoerce(100, '>', 10)).to.equal(true);
     });
 
     it('should compare new String() values with ">" operator', () => {
@@ -43,6 +97,21 @@ describe('Safe Coerce', () => {
         safeCoerce({}, '>', []);
       })
       .to.throw(TypeError, 'Unexpected comparison of type "Object" and type "Array" using ">" operator');
+    });
+
+    it('should not compare special objects', () => {
+      chaiExpect(() => {
+        safeCoerce({ some: 'foo' }, '>', { bar: 'baz' });
+      })
+      .to.throw(TypeError, 'Unexpected comparison of type "Object" and type "Object" using ">" operator');
+      chaiExpect(() => {
+        safeCoerce({ some: 'foo' }, '>', ['some']);
+      })
+      .to.throw(TypeError, 'Unexpected comparison of type "Object" and type "Array" using ">" operator');
+      chaiExpect(() => {
+        safeCoerce(NaN, '>', ['some']);
+      })
+      .to.throw(TypeError, 'Unexpected comparison of type "NaN" and type "Array" using ">" operator');
     });
   });
 

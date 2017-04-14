@@ -119,8 +119,13 @@ export function safeCoerce(left: any, operator: string, right: any) {
   const rightLowercaseType = getLowercaseType(right);
 
   // Check if operator is comparison
+  // Only allow comparison between values of same type. Can only compare a string
+  // to another string or a number to another number
   if (operator.includes('>') || operator.includes('<')) {
-    if (leftLowercaseType !== rightLowercaseType) {
+    if (
+      leftLowercaseType !== rightLowercaseType ||
+      !(leftLowercaseType === 'string' || leftLowercaseType === 'number')
+    ) {
       const comparisonErrorMessage =
         `Unexpected comparison of type "${getType(left)}" and type "${getType(right)}" using "${operator}" operator`;
       throw new TypeError(comparisonErrorMessage);
@@ -132,13 +137,27 @@ export function safeCoerce(left: any, operator: string, right: any) {
     throw new TypeError(errorMessage);
   }
 
-  if (!((
-    leftLowercaseType === 'string' ||
-    leftLowercaseType === 'number'
-  ) && (
-    rightLowercaseType === 'string' ||
-    rightLowercaseType === 'number'
-  ))) {
+  // Only allow + operator with numbers and strings
+  if (operator.includes('+')) {
+    if (!((
+      leftLowercaseType === 'string' ||
+      leftLowercaseType === 'number'
+    ) && (
+      rightLowercaseType === 'string' ||
+      rightLowercaseType === 'number'
+    ))) {
+      throw new TypeError(errorMessage);
+    }
+  }
+
+  // If the operator is not a comparison or a concatenation and both types
+  // are not numbers, throw
+  if (
+    !(operator.includes('>') || operator.includes('<')) &&
+    !operator.includes('+') &&
+    (leftLowercaseType !== 'number' ||
+    rightLowercaseType !== 'number')
+  ) {
     throw new TypeError(errorMessage);
   }
 
