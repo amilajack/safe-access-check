@@ -67,6 +67,13 @@ describe('Safe Coerce', () => {
       chaiExpect(safeCoerce('b', '>', 'aaa')).to.equal(true);
     });
 
+    it('should compare numbers', () => {
+      const num1 = 1;
+      const num2 = new Number(1);
+      chaiExpect(safeCoerce(num1, '>', num2)).to.equal(false);
+      chaiExpect(safeCoerce(100, '>', 10)).to.equal(true);
+    });
+
     it('should compare new String() values with ">" operator', () => {
       const str1 = new String('b');
       const str2 = new String('aaa');

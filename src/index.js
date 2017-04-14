@@ -119,8 +119,13 @@ export function safeCoerce(left: any, operator: string, right: any) {
   const rightLowercaseType = getLowercaseType(right);
 
   // Check if operator is comparison
+  // Only allow comparison between values of same type. Can only compare a string
+  // to another string or a number to another number
   if (operator.includes('>') || operator.includes('<')) {
-    if (leftLowercaseType !== rightLowercaseType || leftLowercaseType !== 'string') {
+    if (
+      leftLowercaseType !== rightLowercaseType ||
+      !(leftLowercaseType === 'string' || leftLowercaseType === 'number')
+    ) {
       const comparisonErrorMessage =
         `Unexpected comparison of type "${getType(left)}" and type "${getType(right)}" using "${operator}" operator`;
       throw new TypeError(comparisonErrorMessage);
