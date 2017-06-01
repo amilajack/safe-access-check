@@ -1,3 +1,4 @@
+// @flow
 /*
   eslint
     eqeqeq: 0,
