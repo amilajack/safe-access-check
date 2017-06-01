@@ -15,7 +15,7 @@ describe.skip('Safe Method Call', () => {
 });
 
 describe('Safe Coerce', () => {
-  describe('Multiple Operators', () => {
+  describe('Binary Operators', () => {
     it('should work with multiplication operator', () => {
       chaiExpect(() => {
         safeCoerce('some', '*', 10);
@@ -161,7 +161,6 @@ describe('Safe Coerce', () => {
     .to.throw(TypeError, 'Unexpected coercion of type "Function" and type "Object" using "+" operator');
   });
 
-
   it('should fail on coercion of array and object using "-" operator', () => {
     chaiExpect(() => {
       safeCoerce([], '-', {});
@@ -202,6 +201,28 @@ describe('Safe Coerce', () => {
       safeCoerce(undefined, '+', undefined);
     })
     .to.throw(TypeError, 'Unexpected coercion of type "undefined" and type "undefined" using "+" operator');
+  });
+
+  it('should fail on coercion of Object and *', () => {
+    chaiExpect(() => {
+      safeCoerce({}, '+', {});
+    })
+    .to.throw(TypeError, 'Unexpected coercion of type "Object" and type "Object" using "+" operator');
+
+    chaiExpect(() => {
+      safeCoerce({}, '+', null);
+    })
+    .to.throw(TypeError, 'Unexpected coercion of type "Object" and type "null" using "+" operator');
+
+    chaiExpect(() => {
+      safeCoerce({}, '+', undefined);
+    })
+    .to.throw(TypeError, 'Unexpected coercion of type "Object" and type "undefined" using "+" operator');
+
+    chaiExpect(() => {
+      safeCoerce({}, '+', []);
+    })
+    .to.throw(TypeError, 'Unexpected coercion of type "Object" and type "Array" using "+" operator');
   });
 
   it('should fail on coercion of null and null using "+" operator', () => {
