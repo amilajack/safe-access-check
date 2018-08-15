@@ -3,7 +3,7 @@ safe-access-check
 [![Build Status](https://travis-ci.org/amilajack/safe-access-check.svg?branch=master&maxAge=2592)](https://travis-ci.org/amilajack/safe-access-check)
 [![NPM version](https://badge.fury.io/js/safe-access-check.svg?maxAge=2592)](http://badge.fury.io/js/safe-access-check)
 [![Dependency Status](https://img.shields.io/david/amilajack/safe-access-check.svg?maxAge=2592)](https://david-dm.org/amilajack/safe-access-check)
-[![npm](https://img.shields.io/npm/dm/safe-access-check.svg?maxAge=2592)](https://npm-stat.com/charts.html?package=safe-access-check)
+[![npm](https://img.shields.io/npm/dm/safe-access-check.svg?maxAge=2592)](https://npm-stat.com/charts.html?package=safe-access-check) [![Greenkeeper badge](https://badges.greenkeeper.io/amilajack/safe-access-check.svg)](https://greenkeeper.io/)
 
 **⚠️ Experimental. Intended to be used by compilers and code checkers ⚠️**
 
